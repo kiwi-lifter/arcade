@@ -6,14 +6,12 @@ var tileSize = 83;
 var rightBorder = colsNum * colWidth;
 var bottomBorder = rowsNum * rowHeight;
 
-var minEnemyPopulation = 3;
-var maxEnemyPopulation = 9;
-var distanceBetweenEnemies = colWidth;
+var enemyPopulation =3;
 
 // y coordinates for pavement rows
 var pavementRows = [ 60, 145, 230];
 // enemy speeds
-var speeds = [75, 135, 200];
+var speeds = [150, 250, 350];
 
 
 // Enemies our player must avoid
@@ -24,10 +22,8 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-	this.x = 0;
-		
-	this.y = randomNumFromArray(pavementRows);	
-	this.speed = randomNumFromArray(speeds);	
+	// random enemy start
+	this.setStartEnemy();	
 };
 
 // Update the enemy's position, required method for game
@@ -38,12 +34,26 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 	this.x += this.speed * dt;
 	
+	// re start the enemy once it reaches end of row
+	if(this.x > rightBorder) {
+		this.setStartEnemy();
+	}
+	
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
+
+// reset the enemy position once it reaches end of row
+Enemy.prototype.setStartEnemy = function() {
+	this.x = -colWidth;
+	this.y = randomNumFromArray(pavementRows);
+	this.speed = randomNumFromArray(speeds);
+};
+
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -83,24 +93,24 @@ Player.prototype.handleInput = function(allowedKeys) {
     }
 } 
 
-
-
-// This function produces a random number value from an array passed in as a parameter
+// This function randomly selects a number from any number array passed in as the parameter.
 var randomNumFromArray = function(numberArray){
 	var randomNum = numberArray[Math.floor(Math.random() * numberArray.length)];
 	return randomNum;
 };
-
 
 // Now instantiate your objects.
 
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
 
-var enemy = new Enemy;
-allEnemies[0] = enemy;
+for(var i=0; i<enemyPopulation; i++)
+{
+	allEnemies.push(new Enemy);
+};
 
-// Place the player object in a variable called player
+
+// Place the player object in a variable called player.
 var player = new Player;
 
 
