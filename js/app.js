@@ -8,6 +8,9 @@ var bottomBorder = rowsNum * rowHeight;
 
 var enemyPopulation =3;
 
+var enemyHeight = 171;
+var enemyWidth = 101;
+
 var playerHeight = 171;
 var playerWidth = 101;
 
@@ -27,6 +30,10 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+	
+	this.height = enemyHeight;
+	this.width = enemyWidth;
+	
 	// random enemy start
 	this.startEnemy();	
 };
@@ -74,12 +81,15 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function(){
 	this.sprite = 'images/char-boy.png';
+	
+	this.height = playerHeight;
+	this.width = playerWidth;
+	
 	this.startPlayer();
 	
 };
 
 Player.prototype.update = function() {
-	console.log(this.y);
 	if (this.y < 0) {	
         this.startPlayer();
     }
