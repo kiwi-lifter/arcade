@@ -6,21 +6,30 @@ var tileSize = 83;
 var rightBorder = colsNum * colWidth;
 var bottomBorder = rowsNum * rowHeight;
 
+
+
+/* Sprites are not the same size as the tiles so some
+ * tweeking of x y coordinate var values is needed
+ */
 var enemyPopulation =3;
+var enemySprite = 'images/enemy-bug-small.png';
+var enemyHeight = 74;
+var enemyWidth = 98;
 
-var enemyHeight = 171;
-var enemyWidth = 101;
-
-var playerHeight = 171;
-var playerWidth = 101;
+var playerSprite = 'images/char-boy-small.png';
+var playerHeight = 78;
+var playerWidth = 67;
 
 var playerXcoord =  (colsNum * colWidth)/2 - playerWidth/2;
-var playerYcoord =  (rowsNum * rowHeight) - playerHeight/2;
+var playerYcoord =  (rowsNum * rowHeight) - playerHeight/2 +10;
 
 // y coordinates for pavement rows
-var pavementRows = [ 60, 145, 230];
+var pavementRows = [ 140, 220, 305];
 // enemy speeds
-var speeds = [150, 250, 350];
+var speeds = [150, 250, 300];
+
+
+var paused = false;
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -29,7 +38,7 @@ var Enemy = function() {
 	
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+    this.sprite = enemySprite;
 	
 	this.height = enemyHeight;
 	this.width = enemyWidth;
@@ -46,14 +55,14 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 	this.x += this.speed * dt;
 	
-	// re start the enemy once it reaches end of row
+	// Restart the enemy once it reaches end of row.
 	if(this.x > rightBorder) {
 		this.startEnemy();
 	}
 	
 };
 
-// restart Player if hit by enemy
+// Restart Player if hit by enemy.
 Enemy.prototype.collidingWithPlayer = function () {
     if (player.x <= this.x + 50 &&
         this.x <= player.x + 20 &&
@@ -80,7 +89,7 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function(){
-	this.sprite = 'images/char-boy.png';
+	this.sprite = playerSprite;
 	
 	this.height = playerHeight;
 	this.width = playerWidth;
@@ -90,7 +99,7 @@ var Player = function(){
 };
 
 Player.prototype.update = function() {
-	if (this.y < 0) {	
+	if (this.y < 55) {	
         this.startPlayer();
     }
 };
@@ -105,13 +114,13 @@ Player.prototype.startPlayer = function(){
 };
 
 Player.prototype.handleInput = function(keyCode) {
-	
+		
 		switch(keyCode){
 		
 			case "left":
-			if(this.x>0){
+			if(this.x>34){
 				this.x = this.x - colWidth;
-			};
+			}
 			break;
 			
 			case "up":
@@ -131,6 +140,10 @@ Player.prototype.handleInput = function(keyCode) {
 				this.y = this.y + rowHeight;
 			};
 			break;
+			
+			case "p": 
+			togglePause();
+			break; 
 		};
 };
 
@@ -140,6 +153,17 @@ var randomNumFromArray = function(numberArray){
 	return randomNum;
 };
 
+// pause/unpause game
+function togglePause() {
+    if (paused) { // Already paused
+		console.log('restart game!!!');// restart the game! 
+		paused = false; // Game was restarted, so you're not paused anymore
+	} 
+	else{ // Only other option is the game isn't paused, means currently playing
+		console.log('pause game');// pause the game!
+		paused = true; // Game was paused, so you're now paused
+	}
+}
 // Now instantiate your objects.
 
 
@@ -161,8 +185,8 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+		80: 'p'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
