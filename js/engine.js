@@ -94,7 +94,13 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
            enemy.update(dt);
         });
+		
+		allStars.forEach(function(star) {
+			star.update();
+		});
+		
         player.update();
+			
     }
 	
 	/* This is called by the update function, it loops through enemy array 
@@ -108,6 +114,15 @@ var Engine = (function(global) {
 				player.startPlayer();
 			};
 		});
+		
+		/*
+		allStars.forEach(function(star){
+			if (player.x < star.x + star.width && player.x + player.width > star.x && player.y < star.y + star.height && player.height + player.y > star.y) {	
+				star.update();
+			};
+		});
+		*/
+		
 	};
 
     /* This function initially draws the "game level", it will then call
@@ -157,13 +172,17 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+		
+		allStars.forEach(function(star){
+			star.render();
+		});
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
+	
         player.render();
     }
 
@@ -184,7 +203,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug-small.png',
-        'images/char-boy-small.png'
+        'images/char-boy-small.png',
+		'images/star-small.png'
     ]);
     Resources.onReady(init);
 

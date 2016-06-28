@@ -6,8 +6,6 @@ var tileSize = 83;
 var rightBorder = colsNum * colWidth;
 var bottomBorder = rowsNum * rowHeight;
 
-
-
 /* Sprites are not the same size as the tiles so some
  * tweeking of x y coordinate var values is needed
  */
@@ -23,6 +21,17 @@ var playerWidth = 67;
 var playerXcoord =  (colsNum * colWidth)/2 - playerWidth/2;
 var playerYcoord =  (rowsNum * rowHeight) - playerHeight/2 +10;
 
+var numberOfStars = 3;
+var starSprite = 'images/star-small.png';
+var starHeight = 71;
+var starWidth = 71;
+// x coordinates for pavement columns
+var starPavementColumns = [15, 116, 217, 318, 419];
+// y coordinates for pavement rows
+var starPavementRows = [ 140, 220, 305];
+
+// x coordinates for pavement columns
+var pavementColumns = [0, 101, 202, 303, 404];
 // y coordinates for pavement rows
 var pavementRows = [ 140, 220, 305];
 // enemy speeds
@@ -53,24 +62,13 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-	this.x += this.speed * dt;
+	this.x +=  0//this.speed * dt;
 	
 	// Restart the enemy once it reaches end of row.
 	if(this.x > rightBorder) {
 		this.startEnemy();
 	}
 	
-};
-
-// Restart Player if hit by enemy.
-Enemy.prototype.collidingWithPlayer = function () {
-    if (player.x <= this.x + 50 &&
-        this.x <= player.x + 20 &&
-        player.y <= this.y + 20 &&
-        this.y <= player.y + 20) {
-
-        this.startEnemy();
-    }
 };
 
 // reset the enemy position once it reaches end of row
@@ -90,15 +88,13 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function(){
 	this.sprite = playerSprite;
-	
 	this.height = playerHeight;
 	this.width = playerWidth;
-	
 	this.startPlayer();
-	
 };
 
 Player.prototype.update = function() {
+	
 	if (this.y < 55) {	
         this.startPlayer();
     }
@@ -147,23 +143,79 @@ Player.prototype.handleInput = function(keyCode) {
 		};
 };
 
-// This function randomly selects a number from any number array passed in as the parameter.
-var randomNumFromArray = function(numberArray){
-	var randomNum = numberArray[Math.floor(Math.random() * numberArray.length)];
-	return randomNum;
+// Star class
+var Star = function(id){
+	this.id = id;
+	this.sprite = starSprite;
+	this.height = starHeight;
+	this.width = starWidth;
+	this.placeStar();
+}
+
+Star.prototype.placeStar = function(){
+	
+	this.x = starRandomNumFromArray(starPavementColumns);
+	this.y = starRandomNumFromArray(starPavementRows);
+	
 };
 
-// pause/unpause game
-function togglePause() {
-    if (paused) { // Already paused
-		console.log('restart game!!!');// restart the game! 
-		paused = false; // Game was restarted, so you're not paused anymore
-	} 
-	else{ // Only other option is the game isn't paused, means currently playing
-		console.log('pause game');// pause the game!
-		paused = true; // Game was paused, so you're now paused
-	}
+Star.prototype.update = function() {
+
+	
+	
+			if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {	
+			
+				console.log('id= ' + this.id);
+			
+				var target = allStars.indexOf(this.x);
+				
+				console.log('target= ' + target);
+	
+				allStars.splice(target, 1);
+				
+				console.table(allStars);
+				
+			};
+	
 }
+
+Star.prototype.render = function() {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+// This function randomly selects a number from any number array passed in as the parameter.
+var randomNumFromArray = function(numberArray){
+	shuffleArray(numberArray);
+	var randomNum = Math.floor(Math.random() * numberArray.length);
+	var theResult = numberArray[randomNum];
+
+	return theResult;
+};
+
+// This function randomly selects a number from any number array passed in as the parameter.
+var starRandomNumFromArray = function(numberArray){
+	shuffleArray(numberArray);
+	var randomNum = Math.floor(Math.random() * numberArray.length);
+	var theResult = numberArray[randomNum];
+	numberArray.splice(randomNum, 1);
+
+	return theResult;
+};
+
+var shuffleArray = function(array) {
+  var i = 0
+    , j = 0
+    , temp = null;
+
+  for (i = array.length - 1; i > 0; i -= 1) {
+    j = Math.floor(Math.random() * (i + 1));
+    temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+	return temp;
+  }
+}
+
 // Now instantiate your objects.
 
 
@@ -173,6 +225,14 @@ var allEnemies = [];
 for(var i=0; i<enemyPopulation; i++)
 {
 	allEnemies.push(new Enemy);
+};
+
+// Array for stars
+var allStars = [];
+
+for(var s=0; s<numberOfStars; s++)
+{
+	allStars.push(new Star(s));
 };
 
 // Place the player object in a variable called player.
