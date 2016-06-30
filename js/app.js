@@ -9,36 +9,67 @@ var bottomBorder = rowsNum * rowHeight;
 /* Sprites are not the same size as the tiles so some
  * tweeking of x y coordinate var values is needed
  */
-var enemyPopulation =3;
+var enemyPopulation =4;
 var enemySprite = 'images/enemy-bug-small.png';
 var enemyHeight = 74;
 var enemyWidth = 98;
+var speeds = [150, 250, 300];
 
 var playerSprite = 'images/char-boy-small.png';
 var playerHeight = 78;
 var playerWidth = 67;
-
 var playerXcoord =  (colsNum * colWidth)/2 - playerWidth/2;
 var playerYcoord =  (rowsNum * rowHeight) - playerHeight/2 +10;
+var lives = 3;
+var score = 0;
+
 
 var numberOfStars = 3;
 var starSprite = 'images/star-small.png';
 var starHeight = 71;
 var starWidth = 71;
-// x coordinates for pavement columns
-var starPavementColumns = [15, 116, 217, 318, 419];
-// y coordinates for pavement rows
-var starPavementRows = [ 140, 220, 305];
+
 
 // x coordinates for pavement columns
 var pavementColumns = [0, 101, 202, 303, 404];
 // y coordinates for pavement rows
 var pavementRows = [ 140, 220, 305];
-// enemy speeds
-var speeds = [150, 250, 300];
 
 
-var paused = false;
+
+var fieldGrid = [
+//{"x" : "15","y" : "55", "active" : "false"}, // water row
+{"x" : 15, "y" : 140, "active" : "false"}, // pavement row
+{"x" : 15,"y" : 220, "active" : "false"}, // pavement row
+{"x" : 15,"y" : 305, "active" : "false"}, // pavement row
+//{"x" : "15","y" : "390", "active" : "false"}, // grass row
+//{"x" : "15","y" : "470", "active" : "false"}, // grass row 
+//{"x" : "115", "y" : "55", "active" : "false"},
+{"x" : 116,"y" : 140, "active" : "false"},
+{"x" : 116,"y" : 220, "active" : "false"},
+{"x" : 116,"y" : 305, "active" : "false"},
+//{"x" : "115","y" : "390", "active" : "false"},
+//{"x" : "115","y" : "470", "active" : "false"},
+//{"x" : "215","y" : "55", "active" : "false"},
+{"x" : 217,"y" : 140, "active" : "false"},
+{"x" : 217,"y" : 220, "active" : "false"},
+{"x" : 217,"y" : 305, "active" : "false"},
+//{"x" : "215","y" : "390", "active" : "false"},
+//{"x" : "215","y" : "470", "active" : "false"},
+//{"x" : "320","y" : "55", "active" : "false"},
+{"x" : 318,"y" : 140, "active" : "false"},
+{"x" : 318,"y" : 220, "active" : "false"},
+{"x" : 318,"y" : 305, "active" : "false"},
+//{"x" : "320","y" : "390", "active" : "false"},
+//{"x" : "320","y" : "470", "active" : "false"},
+//{"x" : "420","y" : "55", "active" : "false"},
+{"x" : 419,"y" : 140, "active" : "false"},
+{"x" : 419,"y" : 220, "active" : "false"},
+{"x" : 419,"y" : 305, "active" : "false"},
+//{"x" : "420","y" : "390", "active" : "false"},
+//{"x" : "420","y" : "470", "active" : "false"}*/
+];
+
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -62,25 +93,30 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-	this.x +=  0//this.speed * dt;
+	this.x +=  this.speed * dt;
 	
 	// Restart the enemy once it reaches end of row.
 	if(this.x > rightBorder) {
 		this.startEnemy();
 	}
 	
+	if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {	
+		player.startPlayer();
+	};
+
 };
 
 // reset the enemy position once it reaches end of row
 Enemy.prototype.startEnemy = function() {
 	this.x = -colWidth;
-	this.y = randomNumFromArray(pavementRows);
+	this.coordinates = randomCoordinates();
+	this.y = this.coordinates.y;
 	this.speed = randomNumFromArray(speeds);
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.coordinates.y);
 };
 
 // Now write your own player class
@@ -91,23 +127,37 @@ var Player = function(){
 	this.height = playerHeight;
 	this.width = playerWidth;
 	this.startPlayer();
+	this.score = score;
+	this.lives = lives;
 };
 
 Player.prototype.update = function() {
 	
 	if (this.y < 55) {	
+		
+		player.score += 20;
         this.startPlayer();
     }
 };
 
 Player.prototype.render = function() {
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+	
+	// score
+	ctx.font = "20px Arial";
+	ctx.fillStyle = "#fff";
+	ctx.fillText("Score: "+this.score, 8, 570);
+	
+	// lives
+	ctx.font = "20px Arial";
+	ctx.fillStyle = "#fff";
+	ctx.fillText("Lives: "+this.lives, 412, 570);
 }; 
 
 Player.prototype.startPlayer = function(){
 	this.x = playerXcoord;
 	this.y = playerYcoord;
-};
+}
 
 Player.prototype.handleInput = function(keyCode) {
 		
@@ -137,9 +187,6 @@ Player.prototype.handleInput = function(keyCode) {
 			};
 			break;
 			
-			case "p": 
-			togglePause();
-			break; 
 		};
 };
 
@@ -149,55 +196,65 @@ var Star = function(id){
 	this.sprite = starSprite;
 	this.height = starHeight;
 	this.width = starWidth;
+	console.log(this.id);
 	this.placeStar();
+	
 }
 
 Star.prototype.placeStar = function(){
+
+	//this.coordinates = randomCoordinates();
+	//this.x = starRandomNumFromArray(starPavementColumns);
+	//this.y = starRandomNumFromArray(starPavementRows);
 	
-	this.x = starRandomNumFromArray(starPavementColumns);
-	this.y = starRandomNumFromArray(starPavementRows);
+	this.coordinates = randomCoordinates();
+	this.x = this.coordinates.x;
+	this.y = this.coordinates.y;
 	
 };
 
-Star.prototype.update = function() {
 
-	
-	
+Star.prototype.update = function() {
+			
+			// collision detection
 			if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {	
-			
-				console.log('id= ' + this.id);
-			
-				var target = allStars.indexOf(this.x);
 				
-				console.log('target= ' + target);
-	
-				allStars.splice(target, 1);
+				//find index position of star object in array
+				var index = 5;
 				
-				console.table(allStars);
+				for(var i = 0; i < allStars.length; i++) {
+					if(allStars[i].id === this.id){
+						index = i;
+						break;
+					}
+				};
 				
+				// remove star object from array
+				allStars.splice(index, 1);
+				
+				// increment score
+				player.score += 10;
 			};
-	
 }
 
 Star.prototype.render = function() {
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
-// This function randomly selects a number from any number array passed in as the parameter.
-var randomNumFromArray = function(numberArray){
-	shuffleArray(numberArray);
-	var randomNum = Math.floor(Math.random() * numberArray.length);
-	var theResult = numberArray[randomNum];
+// Random selection of x y cooordinates object from an array
+var randomCoordinates = function(){
+	shuffleArray(fieldGrid);
+	var randomNum = Math.floor(Math.random() * fieldGrid.length);
+	var theResult = fieldGrid[randomNum];
 
 	return theResult;
 };
 
-// This function randomly selects a number from any number array passed in as the parameter.
-var starRandomNumFromArray = function(numberArray){
+// Random selection of a number from any number array passed in as the parameter.
+var randomNumFromArray = function(numberArray){
 	shuffleArray(numberArray);
 	var randomNum = Math.floor(Math.random() * numberArray.length);
 	var theResult = numberArray[randomNum];
-	numberArray.splice(randomNum, 1);
 
 	return theResult;
 };

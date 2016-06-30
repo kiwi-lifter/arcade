@@ -80,7 +80,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        checkCollisions();
+        //checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -108,22 +108,24 @@ var Engine = (function(global) {
 	 * if there is a match then the two sprites have come in contact and the 
 	 * player is reset to start coordinates.
 	 */
-	function checkCollisions() {
+	/*function checkCollisions() {
+		
+		
 		allEnemies.forEach(function(enemy){
 			if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x && player.y < enemy.y + enemy.height && player.height + player.y > enemy.y) {	
 				player.startPlayer();
 			};
 		});
 		
-		/*
+		
 		allStars.forEach(function(star){
 			if (player.x < star.x + star.width && player.x + player.width > star.x && player.y < star.y + star.height && player.height + player.y > star.y) {	
 				star.update();
 			};
 		});
-		*/
 		
-	};
+		
+	}; */
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -184,6 +186,7 @@ var Engine = (function(global) {
         });
 	
         player.render();
+		
     }
 
     /* This function does nothing but it could have been a good place to
