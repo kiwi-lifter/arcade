@@ -99,6 +99,10 @@ var Engine = (function(global) {
 			star.update();
 		});
 		
+		allGems.forEach(function(gem) {
+			gem.update();
+		});
+		
         player.update();
 			
     }
@@ -175,6 +179,10 @@ var Engine = (function(global) {
      */
     function renderEntities() {
 		
+		allGems.forEach(function(gem){	
+			gem.render();
+		});
+		
 		allStars.forEach(function(star){
 			star.render();
 		});
@@ -207,7 +215,10 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug-small.png',
         'images/char-boy-small.png',
-		'images/star-small.png'
+		'images/star-small.png',
+		'images/gem-blue-small.png',
+		'images/gem-orange-small.png',
+		'images/gem-green-small.png'
     ]);
     Resources.onReady(init);
 

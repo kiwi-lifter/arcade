@@ -29,45 +29,35 @@ var starSprite = 'images/star-small.png';
 var starHeight = 71;
 var starWidth = 71;
 
+var numberOfGems = 2;
+var gemSprites = ['images/gem-blue-small.png','images/gem-orange-small.png','images/gem-green-small.png'];
+var gemHeight = 77;
+var gemWidth = 71;
 
 // x coordinates for pavement columns
-var pavementColumns = [0, 101, 202, 303, 404];
+//var pavementColumns = [0, 101, 202, 303, 404];
 // y coordinates for pavement rows
-var pavementRows = [ 140, 220, 305];
+//var pavementRows = [ 140, 220, 305];
 
 
-
+//x y coordinates for pavement tiles
 var fieldGrid = [
 //{"x" : "15","y" : "55", "active" : "false"}, // water row
-{"x" : 15, "y" : 140, "active" : "false"}, // pavement row
-{"x" : 15,"y" : 220, "active" : "false"}, // pavement row
-{"x" : 15,"y" : 305, "active" : "false"}, // pavement row
-//{"x" : "15","y" : "390", "active" : "false"}, // grass row
-//{"x" : "15","y" : "470", "active" : "false"}, // grass row 
-//{"x" : "115", "y" : "55", "active" : "false"},
-{"x" : 116,"y" : 140, "active" : "false"},
-{"x" : 116,"y" : 220, "active" : "false"},
-{"x" : 116,"y" : 305, "active" : "false"},
-//{"x" : "115","y" : "390", "active" : "false"},
-//{"x" : "115","y" : "470", "active" : "false"},
-//{"x" : "215","y" : "55", "active" : "false"},
-{"x" : 217,"y" : 140, "active" : "false"},
-{"x" : 217,"y" : 220, "active" : "false"},
-{"x" : 217,"y" : 305, "active" : "false"},
-//{"x" : "215","y" : "390", "active" : "false"},
-//{"x" : "215","y" : "470", "active" : "false"},
-//{"x" : "320","y" : "55", "active" : "false"},
-{"x" : 318,"y" : 140, "active" : "false"},
-{"x" : 318,"y" : 220, "active" : "false"},
-{"x" : 318,"y" : 305, "active" : "false"},
-//{"x" : "320","y" : "390", "active" : "false"},
-//{"x" : "320","y" : "470", "active" : "false"},
-//{"x" : "420","y" : "55", "active" : "false"},
-{"x" : 419,"y" : 140, "active" : "false"},
-{"x" : 419,"y" : 220, "active" : "false"},
-{"x" : 419,"y" : 305, "active" : "false"},
-//{"x" : "420","y" : "390", "active" : "false"},
-//{"x" : "420","y" : "470", "active" : "false"}*/
+{"x" : 15, "y" : 140, "active" : false}, 
+{"x" : 15,"y" : 220, "active" : false},
+{"x" : 15,"y" : 305, "active" : false},
+{"x" : 116,"y" : 140, "active" : false},
+{"x" : 116,"y" : 220, "active" : false},
+{"x" : 116,"y" : 305, "active" : false},
+{"x" : 217,"y" : 140, "active" : false},
+{"x" : 217,"y" : 220, "active" : false},
+{"x" : 217,"y" : 305, "active" : false},
+{"x" : 318,"y" : 140, "active" : false},
+{"x" : 318,"y" : 220, "active" : false},
+{"x" : 318,"y" : 305, "active" : false},
+{"x" : 419,"y" : 140, "active" : false},
+{"x" : 419,"y" : 220, "active" : false},
+{"x" : 419,"y" : 305, "active" : false},
 ];
 
 
@@ -100,7 +90,9 @@ Enemy.prototype.update = function(dt) {
 		this.startEnemy();
 	}
 	
-	if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {	
+	// check for collision with player
+	if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {		
+		player.lives -= 1;
 		player.startPlayer();
 	};
 
@@ -132,6 +124,11 @@ var Player = function(){
 };
 
 Player.prototype.update = function() {
+	
+	
+	if(player.lives === 0){
+	console.log('Game Over');
+	};
 	
 	if (this.y < 55) {	
 		
@@ -191,28 +188,44 @@ Player.prototype.handleInput = function(keyCode) {
 };
 
 // Star class
-var Star = function(id){
-	this.id = id;
+var Star = function(){
 	this.sprite = starSprite;
 	this.height = starHeight;
 	this.width = starWidth;
-	console.log(this.id);
 	this.placeStar();
 	
 }
 
 Star.prototype.placeStar = function(){
 
-	//this.coordinates = randomCoordinates();
-	//this.x = starRandomNumFromArray(starPavementColumns);
-	//this.y = starRandomNumFromArray(starPavementRows);
+	// get random x y coordinates for star
+	var active = true;
 	
-	this.coordinates = randomCoordinates();
-	this.x = this.coordinates.x;
-	this.y = this.coordinates.y;
-	
+	while(active = true){
+		
+		this.coordinates = randomCoordinates();
+		
+		// make sure grid postion is not already occupied by a star or gem
+		if(this.coordinates.active === false){
+			this.x = this.coordinates.x;
+			this.y = this.coordinates.y;
+			
+			var index = -1;
+				
+				for(var i = 0; i < fieldGrid.length; i++) {
+					if(fieldGrid[i].x === this.x && fieldGrid[i].y === this.y){
+						index = i;
+						break;
+					}
+				};
+			
+			fieldGrid[i].active = true;
+				
+			//active = false;
+			break;
+		}	//end if
+	} // end while	
 };
-
 
 Star.prototype.update = function() {
 			
@@ -220,10 +233,10 @@ Star.prototype.update = function() {
 			if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {	
 				
 				//find index position of star object in array
-				var index = 5;
+				var index = -1;
 				
 				for(var i = 0; i < allStars.length; i++) {
-					if(allStars[i].id === this.id){
+					if(allStars[i].x === this.x && allStars[i].y === this.y){
 						index = i;
 						break;
 					}
@@ -241,24 +254,117 @@ Star.prototype.render = function() {
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+
+
+// Gem class
+var Gem = function(){
+	console.log(gemSprites);
+	this.sprite = randomSpriteImage(gemSprites);
+	this.height = gemHeight;
+	this.width = gemWidth;
+	this.placeGem();
+	
+}
+
+Gem.prototype.placeGem = function(){
+
+	// get random x y coordinates for gem
+	var active = true;
+	
+	while(active = true){
+		
+		this.coordinates = randomCoordinates();
+		
+		// make sure grid postion is not already occupied by a star or gem
+		if(this.coordinates.active === false){
+			this.x = this.coordinates.x;
+			this.y = this.coordinates.y;
+			
+			var index = -1;
+				
+				for(var i = 0; i < fieldGrid.length; i++) {
+					if(fieldGrid[i].x === this.x && fieldGrid[i].y === this.y){
+						index = i;
+						break;
+					}
+				};
+			
+			fieldGrid[i].active = true;
+				
+			//active = false;
+			break;
+		}	//end if
+	} // end while	
+};
+
+Gem.prototype.update = function() {
+			
+			// collision detection
+			if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {	
+				
+				//find index position of star object in array
+				var index = -1;
+				
+				for(var i = 0; i < allGems.length; i++) {
+					if(allGems[i].x === this.x && allGems[i].y === this.y){
+						index = i;
+						break;
+					}
+				};
+				
+				// remove gem object from array
+				allGems.splice(index, 1);
+				
+				// increment score
+				player.score += 15;
+			};
+}
+
+Gem.prototype.render = function() {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Random selection of x y cooordinates object from an array
 var randomCoordinates = function(){
+	
 	shuffleArray(fieldGrid);
+	
 	var randomNum = Math.floor(Math.random() * fieldGrid.length);
 	var theResult = fieldGrid[randomNum];
-
-	return theResult;
+	
+	return theResult;			
 };
 
 // Random selection of a number from any number array passed in as the parameter.
 var randomNumFromArray = function(numberArray){
+	
 	shuffleArray(numberArray);
 	var randomNum = Math.floor(Math.random() * numberArray.length);
 	var theResult = numberArray[randomNum];
-
 	return theResult;
 };
 
+// Random selection of sprite image/sprite
+var randomSpriteImage = function(spriteArray){
+	
+	var randomNum = Math.floor(Math.random() * spriteArray.length);
+	var theResult = spriteArray[randomNum];
+	return theResult;
+};
+
+//Some extra randomness
 var shuffleArray = function(array) {
   var i = 0
     , j = 0
@@ -271,7 +377,7 @@ var shuffleArray = function(array) {
     array[j] = temp;
 	return temp;
   }
-}
+};
 
 // Now instantiate your objects.
 
@@ -287,9 +393,17 @@ for(var i=0; i<enemyPopulation; i++)
 // Array for stars
 var allStars = [];
 
-for(var s=0; s<numberOfStars; s++)
+for(var i=0; i<numberOfStars; i++)
 {
-	allStars.push(new Star(s));
+	allStars.push(new Star);
+};
+
+// Array for gems
+var allGems = [];
+
+for(var i=0; i<numberOfGems; i++)
+{
+	allGems.push(new Gem);
 };
 
 // Place the player object in a variable called player.
