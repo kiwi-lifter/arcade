@@ -9,30 +9,36 @@ var bottomBorder = rowsNum * rowHeight;
 /* Sprites are not the same size as the tiles so some
  * tweeking of x y coordinate var values is needed
  */
+ 
 var enemyPopulation =4;
-var enemySprite = 'images/enemy-bug-small.png';
+var enemySprites = ['images/red-d.gif','images/blue-d.gif','images/black-d.gif'];
 var enemyHeight = 74;
 var enemyWidth = 98;
 var speeds = [150, 250, 300];
 
-var playerSprite = 'images/char-boy-small.png';
-var playerHeight = 78;
-var playerWidth = 67;
+var playerSprite = 'images/knight.gif';
+var playerHeight = 89;
+var playerWidth = 71;
 var playerXcoord =  (colsNum * colWidth)/2 - playerWidth/2;
 var playerYcoord =  (rowsNum * rowHeight) - playerHeight/2 +10;
 var lives = 3;
 var score = 0;
 
 
-var numberOfStars = 3;
-var starSprite = 'images/star-small.png';
+var numberOfStars = 1;
+var starSprite = 'images/coins.png';
 var starHeight = 71;
 var starWidth = 71;
 
 var numberOfGems = 2;
-var gemSprites = ['images/gem-blue-small.png','images/gem-orange-small.png','images/gem-green-small.png'];
-var gemHeight = 77;
+var gemSprites = ['images/sword.png','images/book.png','images/potion.png'];
+var gemHeight = 71;
 var gemWidth = 71;
+
+var numberOfHearts = 3;
+var heartSprite = 'images/skull.png';
+var heartHeight = 71;
+var heartWidth = 71;
 
 // x coordinates for pavement columns
 //var pavementColumns = [0, 101, 202, 303, 404];
@@ -63,13 +69,7 @@ var fieldGrid = [
 
 // Enemies our player must avoid
 var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-	
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = enemySprite;
-	
+ 
 	this.height = enemyHeight;
 	this.width = enemyWidth;
 	
@@ -100,10 +100,29 @@ Enemy.prototype.update = function(dt) {
 
 // reset the enemy position once it reaches end of row
 Enemy.prototype.startEnemy = function() {
+	this.sprite = randomSpriteImage(enemySprites);
 	this.x = -colWidth;
 	this.coordinates = randomCoordinates();
 	this.y = this.coordinates.y;
-	this.speed = randomNumFromArray(speeds);
+	
+	//this.speed = randomNumFromArray(speeds);
+	
+	switch(this.sprite){
+		
+			case 'images/red-d.gif':
+			this.speed = 210;
+			break;
+			
+			case 'images/black-d.gif':
+			this.speed = 140;
+			break;
+				
+			case 'images/blue-d.gif':
+			this.speed = 70;
+			break;
+						
+			default: this.speed = 70;	
+		};
 };
 
 // Draw the enemy on the screen, required method for game
@@ -246,7 +265,7 @@ Star.prototype.update = function() {
 				allStars.splice(index, 1);
 				
 				// increment score
-				player.score += 10;
+				player.score +=20;
 			};
 }
 
@@ -258,7 +277,6 @@ Star.prototype.render = function() {
 
 // Gem class
 var Gem = function(){
-	console.log(gemSprites);
 	this.sprite = randomSpriteImage(gemSprites);
 	this.height = gemHeight;
 	this.width = gemWidth;
@@ -316,7 +334,7 @@ Gem.prototype.update = function() {
 				allGems.splice(index, 1);
 				
 				// increment score
-				player.score += 15;
+				player.score += 10;
 			};
 }
 
@@ -324,17 +342,72 @@ Gem.prototype.render = function() {
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+// Heart class
+var Heart = function(){
+	this.sprite = heartSprite;
+	this.height = heartHeight;
+	this.width = heartWidth;
+	this.placeHeart();
+	
+}
 
+Heart.prototype.placeHeart = function(){
 
+	// get random x y coordinates for gem
+	var active = true;
+	
+	while(active = true){
+		
+		this.coordinates = randomCoordinates();
+		
+		// make sure grid postion is not already occupied by a star, gem or heart
+		if(this.coordinates.active === false){
+			this.x = this.coordinates.x;
+			this.y = this.coordinates.y;
+			
+			var index = -1;
+				
+				for(var i = 0; i < fieldGrid.length; i++) {
+					if(fieldGrid[i].x === this.x && fieldGrid[i].y === this.y){
+						index = i;
+						break;
+					}
+				};
+			
+			fieldGrid[i].active = true;
+				
+			//active = false;
+			break;
+		}	//end if
+	} // end while	
+};
 
+Heart.prototype.update = function() {
+			
+			// collision detection
+			if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {	
+				
+				//find index position of star object in array
+				var index = -1;
+				
+				for(var i = 0; i < allHearts.length; i++) {
+					if(allHearts[i].x === this.x && allHearts[i].y === this.y){
+						index = i;
+						break;
+					}
+				};
+				
+				// remove gem object from array
+				allHearts.splice(index, 1);
+				
+				// increment score
+				player.score -= 10;
+			};
+}
 
-
-
-
-
-
-
-
+Heart.prototype.render = function() {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
 
 // Random selection of x y cooordinates object from an array
 var randomCoordinates = function(){
@@ -404,6 +477,14 @@ var allGems = [];
 for(var i=0; i<numberOfGems; i++)
 {
 	allGems.push(new Gem);
+};
+
+// Array for hearts
+var allHearts = [];
+
+for(var i=0; i<numberOfHearts; i++)
+{
+	allHearts.push(new Heart);
 };
 
 // Place the player object in a variable called player.
