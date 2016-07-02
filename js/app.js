@@ -240,10 +240,9 @@ Star.prototype.placeStar = function(){
 			
 			fieldGrid[i].active = true;
 				
-			//active = false;
 			break;
-		}	//end if
-	} // end while	
+		};	//end if
+	}; // end while	
 };
 
 Star.prototype.update = function() {
@@ -401,7 +400,9 @@ Heart.prototype.update = function() {
 				allHearts.splice(index, 1);
 				
 				// increment score
-				player.score -= 10;
+				if(player.score >=10){
+					player.score -= 10;
+				}
 			};
 }
 
