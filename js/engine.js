@@ -13,6 +13,7 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.
  */
+ 
 
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
@@ -24,12 +25,12 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
-
+		
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
-
-    /* This function serves as the kickoff point for the game loop itself
+	
+	/* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
     function main() {
@@ -57,6 +58,8 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
+		
+		return lastTime;
     }
 
     /* This function does some initial setup that should only occur once,
@@ -95,15 +98,15 @@ var Engine = (function(global) {
            enemy.update(dt);
         });
 		
-		allStars.forEach(function(star) {
-			star.update();
+		allCoins.forEach(function(Coins) {
+			Coins.update();
 		});
 		
-		allGems.forEach(function(gem) {
-			gem.update();
+		allEquip.forEach(function(Equip) {
+			Equip.update();
 		});
 		
-		allHearts.forEach(function(heart) {
+		allSkulls.forEach(function(heart) {
 			heart.update();
 		});
 		
@@ -114,21 +117,21 @@ var Engine = (function(global) {
 	/* This is called by the update function, it loops through enemy array 
 	 * and compares each enemy x y coordinates with player's coordinates, 
 	 * if there is a match then the two sprites have come in contact and the 
-	 * player is reset to start coordinates.
+	 * player is reset to Coinst coordinates.
 	 */
 	/*function checkCollisions() {
 		
 		
 		allEnemies.forEach(function(enemy){
 			if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x && player.y < enemy.y + enemy.height && player.height + player.y > enemy.y) {	
-				player.startPlayer();
+				player.CoinstPlayer();
 			};
 		});
 		
 		
-		allStars.forEach(function(star){
-			if (player.x < star.x + star.width && player.x + player.width > star.x && player.y < star.y + star.height && player.height + player.y > star.y) {	
-				star.update();
+		allCoins.forEach(function(Coins){
+			if (player.x < Coins.x + Coins.width && player.x + player.width > Coins.x && player.y < Coins.y + Coins.height && player.height + player.y > Coins.y) {	
+				Coins.update();
 			};
 		});
 		
@@ -165,7 +168,7 @@ var Engine = (function(global) {
             for (col = 0; col < numCols; col++) {
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
-                 * to start drawing and the y coordinate to start drawing.
+                 * to Coinst drawing and the y coordinate to Coinst drawing.
                  * We're using our Resources helpers to refer to our images
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
@@ -183,16 +186,16 @@ var Engine = (function(global) {
      */
     function renderEntities() {
 		
-		allHearts.forEach(function(heart){	
+		allSkulls.forEach(function(heart){	
 			heart.render();
 		});
 		
-		allGems.forEach(function(gem){	
-			gem.render();
+		allEquip.forEach(function(Equip){	
+			Equip.render();
 		});
 		
-		allStars.forEach(function(star){
-			star.render();
+		allCoins.forEach(function(Coins){
+			Coins.render();
 		});
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
@@ -215,7 +218,7 @@ var Engine = (function(global) {
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
-     * all of these images are properly loaded our game will start.
+     * all of these images are properly loaded our game will Coinst.
      */
     Resources.load([
         'images/stone-block.png',
@@ -231,6 +234,7 @@ var Engine = (function(global) {
 		'images/coins.png',
 		'images/skull.png'
     ]);
+	
     Resources.onReady(init);
 
     /* Assign the canvas' context object to the global variable (the window
@@ -238,4 +242,7 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+	
 })(this);
+
+
