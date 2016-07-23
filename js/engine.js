@@ -98,16 +98,16 @@ var Engine = (function(global) {
            enemy.update(dt);
         });
 		
-		allCoins.forEach(function(Coins) {
-			Coins.update();
+		allCoins.forEach(function(coins) {
+			coins.update(allCoins);
 		});
 		
-		allEquip.forEach(function(Equip) {
-			Equip.update();
+		allEquip.forEach(function(equip) {
+			equip.update();
 		});
 		
-		allSkulls.forEach(function(heart) {
-			heart.update();
+		allSkulls.forEach(function(skull) {
+			skull.update();
 		});
 		
         player.update();
@@ -186,16 +186,16 @@ var Engine = (function(global) {
      */
     function renderEntities() {
 		
-		allSkulls.forEach(function(heart){	
-			heart.render();
+		allSkulls.forEach(function(skull){	
+			skull.render();
 		});
 		
-		allEquip.forEach(function(Equip){	
-			Equip.render();
+		allEquip.forEach(function(equip){	
+			equip.render();
 		});
 		
-		allCoins.forEach(function(Coins){
-			Coins.render();
+		allCoins.forEach(function(coins){
+			coins.render();
 		});
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
@@ -244,5 +244,3 @@ var Engine = (function(global) {
     global.ctx = ctx;
 	
 })(this);
-
-

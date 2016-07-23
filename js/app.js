@@ -113,6 +113,43 @@ var fieldGrid = [
 ];
 
 
+// Super class for game agents - player, enemies, coins etc
+var GameEntity = function() {
+	
+};
+
+GameEntity.prototype.render = function(){
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.coordinates.y);
+};
+
+GameEntity.prototype.placeEntity = function(){
+	// get random x y coordinates for 
+    var active = true;
+
+    while (active = true) {
+
+        this.coordinates = randomCoordinates();
+
+        // make sure grid postion is not already occupied by an entity
+        if (this.coordinates.active === false) {
+            this.x = this.coordinates.x;
+            this.y = this.coordinates.y;
+
+            var index = -1;
+
+            for (var i = 0; i < fieldGrid.length; i++) {
+                if (fieldGrid[i].x === this.x && fieldGrid[i].y === this.y) {
+                    index = i;
+                    break;
+                }
+            };
+
+            fieldGrid[i].active = true;
+            break;
+        } //end if
+    } // end while	
+};
+
 // Enemies our player must avoid
 var Enemy = function() {
 
@@ -122,6 +159,9 @@ var Enemy = function() {
     // random enemy start
     this.startEnemy();
 };
+
+Enemy.prototype = Object.create(GameEntity.prototype);
+Enemy.prototype.constructor = Enemy;
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -170,11 +210,6 @@ Enemy.prototype.startEnemy = function() {
     };
 };
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.coordinates.y);
-};
-
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -187,8 +222,9 @@ var Player = function() {
     this.lives = lives;
 };
 
-Player.prototype.update = function() {
 
+
+Player.prototype.update = function() {
 
     if (player.lives === 0) {
         console.log('Game Over');
@@ -256,39 +292,12 @@ var Coins = function() {
     this.sprite = CoinsSprite;
     this.height = CoinsHeight;
     this.width = CoinsWidth;
-    this.placeCoins();
+    this.placeEntity();
 
 }
 
-Coins.prototype.placeCoins = function() {
-
-    // get random x y coordinates for Coins
-    var active = true;
-
-    while (active = true) {
-
-        this.coordinates = randomCoordinates();
-
-        // make sure grid postion is not already occupied by a Coins or Equip
-        if (this.coordinates.active === false) {
-            this.x = this.coordinates.x;
-            this.y = this.coordinates.y;
-
-            var index = -1;
-
-            for (var i = 0; i < fieldGrid.length; i++) {
-                if (fieldGrid[i].x === this.x && fieldGrid[i].y === this.y) {
-                    index = i;
-                    break;
-                }
-            };
-
-            fieldGrid[i].active = true;
-
-            break;
-        }; //end if
-    }; // end while	
-};
+Coins.prototype = Object.create(GameEntity.prototype);
+Coins.prototype.constructor = Coins;
 
 Coins.prototype.update = function() {
 
@@ -313,49 +322,17 @@ Coins.prototype.update = function() {
     };
 }
 
-Coins.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
-
-
-
 // Equip class
 var Equip = function() {
+	// get random from an array of images
     this.sprite = randomSpriteImage(equipSprites);
     this.height = equipHeight;
     this.width = equipWidth;
-    this.placeEquip();
-
+    this.placeEntity();
 }
 
-Equip.prototype.placeEquip = function() {
-
-    // get random x y coordinates for Equip
-    var active = true;
-
-    while (active = true) {
-
-        this.coordinates = randomCoordinates();
-
-        // make sure grid postion is not already occupied by a Coins or Equip
-        if (this.coordinates.active === false) {
-            this.x = this.coordinates.x;
-            this.y = this.coordinates.y;
-
-            var index = -1;
-
-            for (var i = 0; i < fieldGrid.length; i++) {
-                if (fieldGrid[i].x === this.x && fieldGrid[i].y === this.y) {
-                    index = i;
-                    break;
-                }
-            };
-
-            fieldGrid[i].active = true;
-            break;
-        } //end if
-    } // end while	
-};
+Equip.prototype = Object.create(GameEntity.prototype);
+Equip.prototype.constructor = Equip;
 
 Equip.prototype.update = function() {
 
@@ -380,49 +357,16 @@ Equip.prototype.update = function() {
     };
 }
 
-Equip.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
-
 // Skull class
 var Skull = function() {
     this.sprite = skullSprite;
     this.height = skullHeight;
     this.width = skullWidth;
-    this.placeSkull();
+    this.placeEntity();
 }
 
-Skull.prototype.placeSkull = function() {
-
-    // get random x y coordinates for Equip
-    var active = true;
-
-    while (active = true) {
-
-        this.coordinates = randomCoordinates();
-
-        // make sure grid postion is not already occupied by a non moving object
-        if (this.coordinates.active === false) {
-            this.x = this.coordinates.x;
-            this.y = this.coordinates.y;
-
-            var index = -1;
-
-            for (var i = 0; i < fieldGrid.length; i++) {
-                if (fieldGrid[i].x === this.x && fieldGrid[i].y === this.y) {
-                    index = i;
-                    break;
-                }
-            };
-
-            fieldGrid[i].active = true;
-
-            //active = false;
-            break;
-        } //end if
-    } // end while	
-};
-
+Skull.prototype = Object.create(GameEntity.prototype);
+Skull.prototype.constructor = Skull;
 Skull.prototype.update = function() {
 
     // collision detection
@@ -446,10 +390,6 @@ Skull.prototype.update = function() {
             player.score -= 10;
         }
     };
-}
-
-Skull.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
 // Random selection of x y cooordinates object from an array
