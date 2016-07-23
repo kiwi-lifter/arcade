@@ -94,23 +94,23 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
+        GAMEMODULE.allEnemies.forEach(function(enemy) {
            enemy.update(dt);
         });
 		
-		allCoins.forEach(function(coins) {
-			coins.update(allCoins);
+		GAMEMODULE.allCoins.forEach(function(coins) {
+			coins.update();
 		});
 		
-		allEquip.forEach(function(equip) {
+		GAMEMODULE.allEquip.forEach(function(equip) {
 			equip.update();
 		});
 		
-		allSkulls.forEach(function(skull) {
+		GAMEMODULE.allSkulls.forEach(function(skull) {
 			skull.update();
 		});
 		
-        player.update();
+        GAMEMODULE.player.update();
 			
     }
 	
@@ -186,25 +186,25 @@ var Engine = (function(global) {
      */
     function renderEntities() {
 		
-		allSkulls.forEach(function(skull){	
+		GAMEMODULE.allSkulls.forEach(function(skull){	
 			skull.render();
 		});
 		
-		allEquip.forEach(function(equip){	
+		GAMEMODULE.allEquip.forEach(function(equip){	
 			equip.render();
 		});
 		
-		allCoins.forEach(function(coins){
+		GAMEMODULE.allCoins.forEach(function(coins){
 			coins.render();
 		});
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
+        GAMEMODULE.allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 	
-        player.render();
+        GAMEMODULE.player.render();
 		
     }
 

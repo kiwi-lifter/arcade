@@ -1,3 +1,5 @@
+var GAMEMODULE = (function () {
+
 var colsNum = 5;
 var rowsNum = 6;
 var colWidth = 101;
@@ -26,9 +28,9 @@ var score = 0;
 
 
 var numberOfCoins = 1;
-var CoinsSprite = 'images/coins.png';
-var CoinsHeight = 71;
-var CoinsWidth = 71;
+var coinsSprite = 'images/coins.png';
+var coinsHeight = 71;
+var coinsWidth = 71;
 
 var numberOfEquip = 2;
 var equipSprites = ['images/sword.png', 'images/book.png', 'images/potion.png'];
@@ -44,7 +46,6 @@ var skullWidth = 71;
 //var pavementColumns = [0, 101, 202, 303, 404];
 // y coordinates for pavement rows
 //var pavementRows = [ 140, 220, 305];
-
 
 //x y coordinates for pavement tiles
 var fieldGrid = [
@@ -114,8 +115,10 @@ var fieldGrid = [
 
 
 // Super class for game agents - player, enemies, coins etc
-var GameEntity = function() {
-	
+var GameEntity = function(sprite, height, width) {
+	this.sprite = sprite;
+	this.height = height;
+	this.width = width;
 };
 
 GameEntity.prototype.render = function(){
@@ -214,15 +217,14 @@ Enemy.prototype.startEnemy = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-    this.sprite = playerSprite;
-    this.height = playerHeight;
-    this.width = playerWidth;
+	GameEntity.call(this, playerSprite, playerHeight, playerWidth);
     this.startPlayer();
     this.score = score;
     this.lives = lives;
 };
 
-
+Player.prototype = Object.create(GameEntity.prototype);
+Player.prototype.constructor = Player;
 
 Player.prototype.update = function() {
 
@@ -289,11 +291,9 @@ Player.prototype.handleInput = function(keyCode) {
 
 // Coins class
 var Coins = function() {
-    this.sprite = CoinsSprite;
-    this.height = CoinsHeight;
-    this.width = CoinsWidth;
+	
+	GameEntity.call(this, coinsSprite, coinsHeight, coinsWidth);
     this.placeEntity();
-
 }
 
 Coins.prototype = Object.create(GameEntity.prototype);
@@ -359,9 +359,7 @@ Equip.prototype.update = function() {
 
 // Skull class
 var Skull = function() {
-    this.sprite = skullSprite;
-    this.height = skullHeight;
-    this.width = skullWidth;
+	GameEntity.call(this, skullSprite, skullHeight, skullWidth);
     this.placeEntity();
 }
 
@@ -481,3 +479,16 @@ document.addEventListener('keyup', function(e) {
     };
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+return {
+	allEnemies: allEnemies,
+	allCoins: allCoins,
+	allEquip: allEquip,
+	allSkulls: allSkulls,
+	player: player
+	
+};
+
+})();
+
+console.log(GAMEMODULE.player);
