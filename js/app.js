@@ -1,5 +1,8 @@
 var GAMEMODULE = (function () {
 
+var gameOver = false;
+var pause = false;
+
 var colsNum = 5;
 var rowsNum = 6;
 var colWidth = 101;
@@ -113,8 +116,132 @@ var fieldGrid = [
     },
 ];
 
+/* Game class with variables and methods for game object
+*/
+var Game = function(){
+	
+	this.gameOver = false;
+	this.pause = false;
 
-// Super class for game agents - player, enemies, coins etc
+	this.colsNum = 5;
+	this.rowsNum = 6;
+	this.colWidth = 101;
+	this.rowHeight = 83;
+	this.tileSize = 83;
+	this.rightBorder = colsNum * colWidth;
+	this.bottomBorder = rowsNum * rowHeight;
+
+	/* Sprites are not the same size as the tiles so some
+	 * tweeking of x y coordinate var values is needed
+	 */
+
+	this.enemyPopulation = 5;
+	this.enemySprites = ['images/red-d.gif', 'images/blue-d.gif', 'images/black-d.gif'];
+	this.enemyHeight = 74;
+	this.enemyWidth = 98;
+	this.speeds = [150, 250, 300];
+
+	this.playerSprite = 'images/knight.gif';
+	this.playerHeight = 89;
+	this.playerWidth = 71;
+	this.playerXcoord = (colsNum * colWidth) / 2 - playerWidth / 2;
+	this.playerYcoord = (rowsNum * rowHeight) - playerHeight / 2 + 10;
+	this.lives = 3;
+	this.score = 0;
+
+	this.numberOfCoins = 1;
+	this.coinsSprite = 'images/coins.png';
+	this.coinsHeight = 71;
+	this.coinsWidth = 71;
+
+	this.numberOfEquip = 2;
+	this.equipSprites = ['images/sword.png', 'images/book.png', 'images/potion.png'];
+	this.equipHeight = 71;
+	this.equipWidth = 71;
+
+	this.numberOfSkulls = 3;
+	this.skullSprite = 'images/skull.png';
+	this.skullHeight = 71;
+	this.skullWidth = 71;
+
+	// x coordinates for pavement columns
+	//var pavementColumns = [0, 101, 202, 303, 404];
+	// y coordinates for pavement rows
+	//var pavementRows = [ 140, 220, 305];
+
+	//x y coordinates for pavement tiles
+	this.fieldGrid = [
+		//{"x" : "15","y" : "55", "active" : "false"}, // water row
+		{
+			"x": 15,
+			"y": 140,
+			"active": false
+		}, {
+			"x": 15,
+			"y": 220,
+			"active": false
+		}, {
+			"x": 15,
+			"y": 305,
+			"active": false
+		}, {
+			"x": 116,
+			"y": 140,
+			"active": false
+		}, {
+			"x": 116,
+			"y": 220,
+			"active": false
+		}, {
+			"x": 116,
+			"y": 305,
+			"active": false
+		}, {
+			"x": 217,
+			"y": 140,
+			"active": false
+		}, {
+			"x": 217,
+			"y": 220,
+			"active": false
+		}, {
+			"x": 217,
+			"y": 305,
+			"active": false
+		}, {
+			"x": 318,
+			"y": 140,
+			"active": false
+		}, {
+			"x": 318,
+			"y": 220,
+			"active": false
+		}, {
+			"x": 318,
+			"y": 305,
+			"active": false
+		}, {
+			"x": 419,
+			"y": 140,
+			"active": false
+		}, {
+			"x": 419,
+			"y": 220,
+			"active": false
+		}, {
+			"x": 419,
+			"y": 305,
+			"active": false
+		},
+	];
+};
+
+
+/* Super class for game agents - player, enemies, coins etc
+* @param {String}	sprite	path to sprite image
+* @param {number}	height	height of sprite
+* @param {number}	width	width of sprite 
+*/
 var GameEntity = function(sprite, height, width) {
 	this.sprite = sprite;
 	this.height = height;
@@ -122,7 +249,7 @@ var GameEntity = function(sprite, height, width) {
 };
 
 GameEntity.prototype.render = function(){
-	ctx.drawImage(Resources.get(this.sprite), this.x, this.coordinates.y);
+	ENGINEMODULE.ctx.drawImage(Resources.get(this.sprite), this.x, this.coordinates.y);
 };
 
 GameEntity.prototype.placeEntity = function(){
@@ -183,6 +310,7 @@ Enemy.prototype.update = function(dt) {
     if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
         player.lives -= 1;
         player.startPlayer();
+		this.startEnemy();
     };
 
 };
@@ -221,71 +349,82 @@ var Player = function() {
     this.startPlayer();
     this.score = score;
     this.lives = lives;
+	this.pause = pause;
+	this.gameOver = gameOver;
 };
 
 Player.prototype = Object.create(GameEntity.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.update = function() {
-
-    if (player.lives === 0) {
-        console.log('Game Over');
+	// reached the water or all out of lives?
+    if (this.lives === 0 || this.y < 55) {
+		this.gameOver = true;
     };
-
-    if (this.y < 55) {
-
-        player.score += 20;
-        this.startPlayer();
-    }
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ENGINEMODULE.ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 
     // score
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "#fff";
-    ctx.fillText("Score: " + this.score, 8, 570);
+    ENGINEMODULE.ctx.font = "20px Arial";
+    ENGINEMODULE.ctx.fillStyle = "#fff";
+    ENGINEMODULE.ctx.fillText("Score: " + this.score, 8, 570);
 
     // lives
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "#fff";
-    ctx.fillText("Lives: " + this.lives, 412, 570);
+    ENGINEMODULE.ctx.font = "20px Arial";
+    ENGINEMODULE.ctx.fillStyle = "#fff";
+    ENGINEMODULE.ctx.fillText("Lives: " + this.lives, 412, 570);
 };
 
 Player.prototype.startPlayer = function() {
     this.x = playerXcoord;
     this.y = playerYcoord;
-}
+};
+
+Player.prototype.togglePause =function() {
+	this.pause = !this.pause;
+};
 
 Player.prototype.handleInput = function(keyCode) {
-
     switch (keyCode) {
-
         case "left":
-            if (this.x > 34) {
+            if (this.x > 34 && !this.paused) {
                 this.x = this.x - colWidth;
             }
             break;
 
         case "up":
-            if (this.y > 0) {
+            if (this.y > 0 && !this.paused) {
                 this.y = this.y - rowHeight;
             };
             break;
 
         case "right":
-            if (this.x < 400) {
+            if (this.x < 400 && !this.paused) {
                 this.x = this.x + colWidth;
             };
             break;
 
         case "down":
-            if (this.y < 400) {
+            if (this.y < 400 && !this.paused) {
                 this.y = this.y + rowHeight;
             };
             break;
-
+		
+		case "pause":
+			this.togglePause();
+			break;
+			
+		case "spacebar":
+			ENGINEMODULE.reset();
+			//resetObstacles();
+			break;
+		
+		default:
+			console.log('no values match the expression');
+			break;
+			
     };
 };
 
@@ -325,9 +464,8 @@ Coins.prototype.update = function() {
 // Equip class
 var Equip = function() {
 	// get random from an array of images
-    this.sprite = randomSpriteImage(equipSprites);
-    this.height = equipHeight;
-    this.width = equipWidth;
+    var randomEnemySprite = randomSpriteImage(equipSprites);
+    GameEntity.call(this, randomEnemySprite, equipHeight, equipWidth);
     this.placeEntity();
 }
 
@@ -435,60 +573,81 @@ var shuffleArray = function(array) {
 
 // Now instantiate your objects.
 
-
 // Place all enemy objects in an array called allEnemies
+
 var allEnemies = [];
-
-for (var i = 0; i < enemyPopulation; i++) {
-    allEnemies.push(new Enemy);
-};
-
+// Array for equipment
+var allEquip = [];
+// Array for skulls
+var allSkulls = [];
 // Array for coins
 var allCoins = [];
 
+for (var i = 0; i < enemyPopulation; i++) {
+	allEnemies.push(new Enemy);
+};
+
 for (var i = 0; i < numberOfCoins; i++) {
-    allCoins.push(new Coins);
+	allCoins.push(new Coins);
 };
-
-// Array for equipment
-var allEquip = [];
-
+/*
 for (var i = 0; i < numberOfEquip; i++) {
-    allEquip.push(new Equip);
+	allEquip.push(new Equip);
 };
-
-// Array for skulls
-var allSkulls = [];
-
+*/
 for (var i = 0; i < numberOfSkulls; i++) {
-    allSkulls.push(new Skull);
+	allSkulls.push(new Skull);
 };
 
 // Place the player object in a variable called player.
 var player = new Player;
 
+/*
+var resetObstacles = function() {
+		allEquip.splice(0);
+		for (var i = 0; i < numberOfEquip; i++) {
+		allEquip.push(new Equip);
+		console.log('help!!!!');
+	};
+};
+*/
+
+
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down',
-        80: 'p'
-    };
-    player.handleInput(allowedKeys[e.keyCode]);
+    var allowedKeys;
+	if(player.gameOver === true) {
+		allowedKeys = {
+			32: 'spacebar'
+		};
+		player.handleInput(allowedKeys[e.keyCode]);
+	} else {
+		allowedKeys = {
+			37: 'left',
+			38: 'up',
+			39: 'right',
+			40: 'down',
+			80: 'pause'
+		};
+		player.handleInput(allowedKeys[e.keyCode]);
+	}// end if
 });
 
+
+/* return GAMEMODULE result as an object to global scope for use by Engine module
+* add any properties to this object that need to be revealed to the global scope	
+*/
 return {
 	allEnemies: allEnemies,
 	allCoins: allCoins,
 	allEquip: allEquip,
+	Equip: Equip,
+	numberOfEquip: numberOfEquip,
 	allSkulls: allSkulls,
-	player: player
-	
+	player: player,
+	lives: lives,
+	score: score
 };
-
 })();
 
-console.log(GAMEMODULE.player);

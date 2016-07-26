@@ -15,11 +15,12 @@
  */
  
 
-var Engine = (function(global) {
+var ENGINEMODULE = (function(global, GAMEMODULE) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
+	 
     var doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
@@ -34,6 +35,7 @@ var Engine = (function(global) {
      * and handles properly calling the update and render methods.
      */
     function main() {
+		
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
          * instructions at different speeds we need a constant value that
@@ -46,9 +48,21 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+		 
         update(dt);
+		
+		if(GAMEMODULE.player.gameOver === false){
         render();
-
+		}
+		else // player reached water or has zero lives
+		{
+			// score
+			ctx.font = "40px Arial";
+			ctx.fillStyle = "#fff";
+			ctx.fillText("Total Score: " + GAMEMODULE.player.score, 130, 200);
+			ctx.font = "30px Arial";
+			ctx.fillText("Press space bar to start again", 55, 300);
+		}
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
@@ -82,10 +96,12 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
-        updateEntities(dt);
+		if(!GAMEMODULE.player.pause){
+			updateEntities(dt);
+		}
         //checkCollisions();
     }
-
+	
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
@@ -93,51 +109,26 @@ var Engine = (function(global) {
      * the data/properties related to the object. Do your drawing in your
      * render methods.
      */
-    function updateEntities(dt) {
-        GAMEMODULE.allEnemies.forEach(function(enemy) {
-           enemy.update(dt);
-        });
-		
-		GAMEMODULE.allCoins.forEach(function(coins) {
-			coins.update();
-		});
-		
-		GAMEMODULE.allEquip.forEach(function(equip) {
-			equip.update();
-		});
-		
-		GAMEMODULE.allSkulls.forEach(function(skull) {
-			skull.update();
-		});
-		
-        GAMEMODULE.player.update();
+	 function updateEntities(dt){
+		 
+			GAMEMODULE.allEnemies.forEach(function(enemy) {
+			   enemy.update(dt);
+			});
 			
-    }
-	
-	/* This is called by the update function, it loops through enemy array 
-	 * and compares each enemy x y coordinates with player's coordinates, 
-	 * if there is a match then the two sprites have come in contact and the 
-	 * player is reset to Coinst coordinates.
-	 */
-	/*function checkCollisions() {
-		
-		
-		allEnemies.forEach(function(enemy){
-			if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x && player.y < enemy.y + enemy.height && player.height + player.y > enemy.y) {	
-				player.CoinstPlayer();
-			};
-		});
-		
-		
-		allCoins.forEach(function(Coins){
-			if (player.x < Coins.x + Coins.width && player.x + player.width > Coins.x && player.y < Coins.y + Coins.height && player.height + player.y > Coins.y) {	
-				Coins.update();
-			};
-		});
-		
-		
-	}; */
-
+			GAMEMODULE.allCoins.forEach(function(coins) {
+				coins.update();
+			});
+			
+			GAMEMODULE.allEquip.forEach(function(equip) {
+				equip.update();
+			});
+			
+			GAMEMODULE.allSkulls.forEach(function(skull) {
+				skull.update();
+			});
+			
+			GAMEMODULE.player.update();		
+	}
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
@@ -176,8 +167,9 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
-        renderEntities();
+		
+		renderEntities();
+		
     }
 
     /* This function is called by the render function and is called on each game
@@ -197,15 +189,15 @@ var Engine = (function(global) {
 		GAMEMODULE.allCoins.forEach(function(coins){
 			coins.render();
 		});
+
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
-         */
+         */	 
         GAMEMODULE.allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 	
-        GAMEMODULE.player.render();
-		
+        GAMEMODULE.player.render();	
     }
 
     /* This function does nothing but it could have been a good place to
@@ -213,7 +205,25 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+	
+		GAMEMODULE.player.lives = GAMEMODULE.lives;
+		GAMEMODULE.player.score = GAMEMODULE.score;
+		GAMEMODULE.player.gameOver = false;
+		GAMEMODULE.player.startPlayer();
+		GAMEMODULE.allEnemies.forEach(function(enemy){
+			enemy.startEnemy();
+		});
+		
+		GAMEMODULE.allEquip.splice(0);
+		for (var i = 0; i < GAMEMODULE.numberOfEquip; i++) {
+			GAMEMODULE.allEquip.push(new GAMEMODULE.Equip);
+		}
+		console.log(GAMEMODULE.allEquip);
+		
+		lastTime = Date.now();
+		
+		main();
+		
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -237,10 +247,13 @@ var Engine = (function(global) {
 	
     Resources.onReady(init);
 
-    /* Assign the canvas' context object to the global variable (the window
-     * object when run in a browser) so that developers can use it more easily
-     * from within their app.js files.
-     */
-    global.ctx = ctx;
+  /* return ENGINEMODULE result as an object to global scope for use by GAMEMODULE
+* add any properties to this object that need to be revealed to the global scope	
+*/
 	
-})(this);
+	return {
+			reset: reset,
+			ctx : ctx
+	}
+	
+})(this, GAMEMODULE);
