@@ -5,7 +5,10 @@ Saint George is fighting a dragon invasion, collecting treasure and avoiding dea
 
 ##Game Controls##
 
-Use the arrow keys to move Sir  George up &#8593;, down, left and right.
+- Use the arrow keys &#8593; &#8594; &#8595; &#8592;, to move Saint George.
+- Pause the game by pressing **Pause**
+- On game over, restart the game by pressing **Spacebar**
+
 
 ####Scoring####
 - **Coins:**		40 points
@@ -14,6 +17,7 @@ Use the arrow keys to move Sir  George up &#8593;, down, left and right.
 
 ##To Do##
 
+- [x] Modularise app.js
 - [x] Add a game over state.
 - [ ] Further refactor GAMEMODULE code.
 - [ ] Add a timer.
