@@ -1,9 +1,15 @@
-##Udacity FEND Arcade Game Project##
+#Udacity FEND Arcade Game Project#
 
+##The Synopsis##
 Saint George is fighting a dragon invasion, collecting treasure and avoiding death skulls as he attempts to reach the lake.
 
-**Coins:**		40 points
-**Equipment:**	15 points
-**Skulls:**		-15 points
+##Game Controls##
+
+Use the arrow keys to move Sir  George up, down, left and right.
+
+####Scoring####
+-**Coins:**		40 points
+-**Equipment:**	15 points
+-**Skulls:**		-15 points
 
 
