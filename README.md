@@ -8,8 +8,8 @@ Saint George is fighting a dragon invasion, collecting treasure and avoiding dea
 Use the arrow keys to move Sir  George up, down, left and right.
 
 ####Scoring####
--**Coins:**		40 points
--**Equipment:**	15 points
--**Skulls:**		-15 points
+- **Coins:**		40 points
+- **Equipment:**	15 points
+- **Skulls:**		-15 points
 
 
