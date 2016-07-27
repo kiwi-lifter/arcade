@@ -22,7 +22,7 @@ var enemyWidth = 98;
 var speeds = [150, 250, 300];
 
 var playerSprite = 'images/knight.gif';
-var playerHeight = 89;
+var playerHeight = 85;
 var playerWidth = 71;
 var playerXcoord = (colsNum * colWidth) / 2 - playerWidth / 2;
 var playerYcoord = (rowsNum * rowHeight) - playerHeight / 2 + 10;
@@ -34,16 +34,19 @@ var numberOfCoins = 1;
 var coinsSprite = 'images/coins.png';
 var coinsHeight = 71;
 var coinsWidth = 71;
+var coinsWorth = 30;
 
 var numberOfEquip = 2;
 var equipSprites = ['images/sword.png', 'images/book.png', 'images/potion.png'];
 var equipHeight = 71;
 var equipWidth = 71;
+var equipWorth = 15;
 
-var numberOfSkulls = 3;
+var numberOfSkulls = 4;
 var skullSprite = 'images/skull.png';
 var skullHeight = 71;
 var skullWidth = 71;
+var skullWorth = -15;
 
 // x coordinates for pavement columns
 //var pavementColumns = [0, 101, 202, 303, 404];
@@ -52,7 +55,7 @@ var skullWidth = 71;
 
 //x y coordinates for pavement tiles
 var fieldGrid = [
-    //{"x" : "15","y" : "55", "active" : "false"}, // water row
+    //{"x" : 15,"y" : 55, "active" : false}, // water row
     {
         "x": 15,
         "y": 140,
@@ -164,11 +167,6 @@ var Game = function(){
 	this.skullHeight = 71;
 	this.skullWidth = 71;
 
-	// x coordinates for pavement columns
-	//var pavementColumns = [0, 101, 202, 303, 404];
-	// y coordinates for pavement rows
-	//var pavementRows = [ 140, 220, 305];
-
 	//x y coordinates for pavement tiles
 	this.fieldGrid = [
 		//{"x" : "15","y" : "55", "active" : "false"}, // water row
@@ -255,25 +253,19 @@ GameEntity.prototype.render = function(){
 GameEntity.prototype.placeEntity = function(){
 	// get random x y coordinates for 
     var active = true;
-
     while (active = true) {
-
         this.coordinates = randomCoordinates();
-
         // make sure grid postion is not already occupied by an entity
         if (this.coordinates.active === false) {
             this.x = this.coordinates.x;
             this.y = this.coordinates.y;
-
             var index = -1;
-
             for (var i = 0; i < fieldGrid.length; i++) {
                 if (fieldGrid[i].x === this.x && fieldGrid[i].y === this.y) {
                     index = i;
                     break;
                 }
             };
-
             fieldGrid[i].active = true;
             break;
         } //end if
@@ -300,19 +292,16 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += this.speed * dt;
-
     // Restart the enemy once it reaches end of row.
     if (this.x > rightBorder) {
         this.startEnemy();
     }
-
     // check for collision with player
     if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
         player.lives -= 1;
         player.startPlayer();
 		this.startEnemy();
     };
-
 };
 
 // reset the enemy position once it reaches end of row
@@ -393,38 +382,36 @@ Player.prototype.handleInput = function(keyCode) {
                 this.x = this.x - colWidth;
             }
             break;
-
+			
         case "up":
             if (this.y > 0 && !this.paused) {
                 this.y = this.y - rowHeight;
             };
             break;
-
+			
         case "right":
             if (this.x < 400 && !this.paused) {
                 this.x = this.x + colWidth;
             };
             break;
-
+			
         case "down":
             if (this.y < 400 && !this.paused) {
                 this.y = this.y + rowHeight;
             };
             break;
-		
+			
 		case "pause":
 			this.togglePause();
-			break;
+			break;	
 			
 		case "spacebar":
-			ENGINEMODULE.reset();
-			//resetObstacles();
-			break;
-		
-		default:
-			console.log('no values match the expression');
+			resetGame();
 			break;
 			
+		default:
+			console.log('keyCode switch default');
+			break;	
     };
 };
 
@@ -439,59 +426,48 @@ Coins.prototype = Object.create(GameEntity.prototype);
 Coins.prototype.constructor = Coins;
 
 Coins.prototype.update = function() {
-
     // collision detection
     if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
-
         //find index position of Coins object in array
         var index = -1;
-
         for (var i = 0; i < allCoins.length; i++) {
             if (allCoins[i].x === this.x && allCoins[i].y === this.y) {
                 index = i;
                 break;
             }
         };
-
-        // remove Coins object from array
-        allCoins.splice(index, 1);
-
+        // remove Coins object from game area
+        this.x = -75;
         // increment score
-        player.score += 20;
+        player.score += coinsWorth;
     };
 }
 
 // Equip class
 var Equip = function() {
 	// get random from an array of images
-    var randomEnemySprite = randomSpriteImage(equipSprites);
+	var randomEnemySprite = randomSpriteImage(equipSprites);
     GameEntity.call(this, randomEnemySprite, equipHeight, equipWidth);
     this.placeEntity();
 }
 
 Equip.prototype = Object.create(GameEntity.prototype);
 Equip.prototype.constructor = Equip;
-
 Equip.prototype.update = function() {
-
     // collision detection
     if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
-
         //find index position of Coins object in array
         var index = -1;
-
         for (var i = 0; i < allEquip.length; i++) {
             if (allEquip[i].x === this.x && allEquip[i].y === this.y) {
                 index = i;
                 break;
             }
         };
-
-        // remove Equip object from array
-        allEquip.splice(index, 1);
-
+        // remove Equip object off the game board
+        this.x = -75;
         // increment score
-        player.score += 10;
+        player.score += equipWorth;
     };
 }
 
@@ -504,44 +480,35 @@ var Skull = function() {
 Skull.prototype = Object.create(GameEntity.prototype);
 Skull.prototype.constructor = Skull;
 Skull.prototype.update = function() {
-
     // collision detection
     if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
-
         //find index position of Skull object in array
         var index = -1;
-
         for (var i = 0; i < allSkulls.length; i++) {
             if (allSkulls[i].x === this.x && allSkulls[i].y === this.y) {
                 index = i;
                 break;
             }
         };
-
-        // remove Skull object from array
-        allSkulls.splice(index, 1);
-
+        // remove Skull object from game canvas
+        this.x = -75;
         // increment score
         if (player.score >= 10) {
-            player.score -= 10;
+            player.score += skullWorth;
         }
     };
 }
 
 // Random selection of x y cooordinates object from an array
 var randomCoordinates = function() {
-
     shuffleArray(fieldGrid);
-
     var randomNum = Math.floor(Math.random() * fieldGrid.length);
     var theResult = fieldGrid[randomNum];
-
     return theResult;
 };
 
 // Random selection of a number from any number array passed in as the parameter.
 var randomNumFromArray = function(numberArray) {
-
     shuffleArray(numberArray);
     var randomNum = Math.floor(Math.random() * numberArray.length);
     var theResult = numberArray[randomNum];
@@ -550,7 +517,6 @@ var randomNumFromArray = function(numberArray) {
 
 // Random selection of sprite image/sprite
 var randomSpriteImage = function(spriteArray) {
-
     var randomNum = Math.floor(Math.random() * spriteArray.length);
     var theResult = spriteArray[randomNum];
     return theResult;
@@ -571,8 +537,31 @@ var shuffleArray = function(array) {
     }
 };
 
+var resetGame = function(){
+	player.lives = GAMEMODULE.lives;
+	player.score = GAMEMODULE.score;
+	player.gameOver = false;
+	player.startPlayer();
+	allEnemies.forEach(function(enemy){
+	enemy.startEnemy();
+		});
+	fieldGrid.forEach(function(gridPoint){
+		gridPoint.active = false;	
+		});
+	allSkulls.forEach(function(skull){
+		skull.placeEntity();
+		});	
+	allEquip.forEach(function(equip){
+		equip.sprite = randomSpriteImage(equipSprites);
+			equip.placeEntity();
+		});	
+	allCoins.forEach(function(coins){
+			coins.placeEntity();
+		});	
+		//lastTime = Date.now();	
+		ENGINEMODULE.main();
+};
 // Now instantiate your objects.
-
 // Place all enemy objects in an array called allEnemies
 
 var allEnemies = [];
@@ -586,32 +575,18 @@ var allCoins = [];
 for (var i = 0; i < enemyPopulation; i++) {
 	allEnemies.push(new Enemy);
 };
-
 for (var i = 0; i < numberOfCoins; i++) {
 	allCoins.push(new Coins);
 };
-/*
 for (var i = 0; i < numberOfEquip; i++) {
 	allEquip.push(new Equip);
 };
-*/
 for (var i = 0; i < numberOfSkulls; i++) {
 	allSkulls.push(new Skull);
 };
 
 // Place the player object in a variable called player.
 var player = new Player;
-
-/*
-var resetObstacles = function() {
-		allEquip.splice(0);
-		for (var i = 0; i < numberOfEquip; i++) {
-		allEquip.push(new Equip);
-		console.log('help!!!!');
-	};
-};
-*/
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -633,8 +608,6 @@ document.addEventListener('keyup', function(e) {
 		player.handleInput(allowedKeys[e.keyCode]);
 	}// end if
 });
-
-
 /* return GAMEMODULE result as an object to global scope for use by Engine module
 * add any properties to this object that need to be revealed to the global scope	
 */
@@ -642,12 +615,10 @@ return {
 	allEnemies: allEnemies,
 	allCoins: allCoins,
 	allEquip: allEquip,
-	Equip: Equip,
-	numberOfEquip: numberOfEquip,
 	allSkulls: allSkulls,
 	player: player,
 	lives: lives,
-	score: score
+	score: score,
+	fieldGrid: fieldGrid,
 };
 })();
-

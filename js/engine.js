@@ -50,19 +50,8 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
          */
 		 
         update(dt);
-		
-		if(GAMEMODULE.player.gameOver === false){
         render();
-		}
-		else // player reached water or has zero lives
-		{
-			// score
-			ctx.font = "40px Arial";
-			ctx.fillStyle = "#fff";
-			ctx.fillText("Total Score: " + GAMEMODULE.player.score, 130, 200);
-			ctx.font = "30px Arial";
-			ctx.fillText("Press space bar to start again", 55, 300);
-		}
+		
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
@@ -110,23 +99,18 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
      * render methods.
      */
 	 function updateEntities(dt){
-		 
 			GAMEMODULE.allEnemies.forEach(function(enemy) {
 			   enemy.update(dt);
 			});
-			
 			GAMEMODULE.allCoins.forEach(function(coins) {
 				coins.update();
 			});
-			
 			GAMEMODULE.allEquip.forEach(function(equip) {
 				equip.update();
 			});
-			
 			GAMEMODULE.allSkulls.forEach(function(skull) {
 				skull.update();
-			});
-			
+			});	
 			GAMEMODULE.player.update();		
 	}
     /* This function initially draws the "game level", it will then call
@@ -167,9 +151,7 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-		
 		renderEntities();
-		
     }
 
     /* This function is called by the render function and is called on each game
@@ -177,27 +159,35 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
-		
-		GAMEMODULE.allSkulls.forEach(function(skull){	
-			skull.render();
-		});
-		
-		GAMEMODULE.allEquip.forEach(function(equip){	
-			equip.render();
-		});
-		
-		GAMEMODULE.allCoins.forEach(function(coins){
-			coins.render();
-		});
-
-        /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
-         */	 
-        GAMEMODULE.allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
-	
-        GAMEMODULE.player.render();	
+		if(GAMEMODULE.player.gameOver === false){
+			GAMEMODULE.allSkulls.forEach(function(skull){	
+				skull.render();
+			});
+			
+			GAMEMODULE.allEquip.forEach(function(equip){	
+				equip.render();
+			});	
+			GAMEMODULE.allCoins.forEach(function(coins){
+				coins.render();
+			});	
+			/* Loop through all of the objects within the allEnemies array and call
+			 * the render function you have defined.
+			 */	 
+			GAMEMODULE.allEnemies.forEach(function(enemy) {
+				enemy.render();
+			});
+			GAMEMODULE.player.render();	
+		}
+		else
+		{
+			GAMEMODULE.player.render();	
+			// score
+			ctx.font = "40px Arial";
+			ctx.fillStyle = "#fff";
+			ctx.fillText("Total Score: " + GAMEMODULE.player.score, 130, 200);
+			ctx.font = "30px Arial";
+			ctx.fillText("Press space bar to start again", 55, 300);
+		}
     }
 
     /* This function does nothing but it could have been a good place to
@@ -205,7 +195,7 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-	
+	/*
 		GAMEMODULE.player.lives = GAMEMODULE.lives;
 		GAMEMODULE.player.score = GAMEMODULE.score;
 		GAMEMODULE.player.gameOver = false;
@@ -213,17 +203,27 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
 		GAMEMODULE.allEnemies.forEach(function(enemy){
 			enemy.startEnemy();
 		});
+		GAMEMODULE.fieldGrid.forEach(function(gridPoint){
+			gridPoint.active = false;	
+		});
+		GAMEMODULE.allSkulls.forEach(function(skull){
+			skull.placeEntity();
+		});
 		
-		GAMEMODULE.allEquip.splice(0);
-		for (var i = 0; i < GAMEMODULE.numberOfEquip; i++) {
-			GAMEMODULE.allEquip.push(new GAMEMODULE.Equip);
-		}
-		console.log(GAMEMODULE.allEquip);
+		GAMEMODULE.allEquip.forEach(function(equip){
+			equip.sprite = GAMEMODULE.randomSpriteImage(GAMEMODULE.equipSprites);
+			equip.placeEntity();
+		});
+		
+		GAMEMODULE.allCoins.forEach(function(coins){
+			coins.placeEntity();
+		});
+	
 		
 		lastTime = Date.now();
 		
 		main();
-		
+		*/
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -252,7 +252,7 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
 */
 	
 	return {
-			reset: reset,
+			main: main,
 			ctx : ctx
 	}
 	
