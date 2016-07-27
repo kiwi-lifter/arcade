@@ -6,7 +6,7 @@ Saint George is fighting a dragon invasion, collecting treasure and avoiding dea
 ##Game Controls##
 
 - Use the arrow keys &#8593; &#8594; &#8595; &#8592;, to move Saint George.
-- Pause the game by pressing **Pause**
+- Pause the game by pressing **P**
 - On game over, restart the game by pressing **Spacebar**
 
 
