@@ -9,6 +9,9 @@ Saint George is fighting a dragon invasion, collecting treasure and avoiding dea
 - Pause the game by pressing **P**
 - On game over, restart the game by pressing **Spacebar**
 
+##Objective##
+
+Avoid skulls and dragons, collect equipment and coins for points before reaching the lake.
 
 ####Scoring####
 - **Coins:**		40 points
