@@ -1,6 +1,9 @@
-frontend-nanodegree-arcade-game
-===============================
+##Udacity FEND Arcade Game Project##
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission.
+Saint George is fighting a dragon invasion, collecting treasure and avoiding death skulls as he attempts to reach the lake.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+**Coins:**		40 points
+**Equipment:**	15 points
+**Skulls:**		-15 points
+
+
