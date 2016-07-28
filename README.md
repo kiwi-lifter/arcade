@@ -10,31 +10,6 @@ To play:
 
 **2.** Open the index.html in a webrowser.
 
-###What's Included###
-
-Within the download you will find the following directories and files:
-
-`arcade/
-|-- css/
-
-|   |__ style.css
-
-|-- images/
-
-|-- js/
-
-|   |-- app.js
-
-|	|-- engine.js
-
-|	|__ resources.js
-
-|-- index.html
-
-|-- LICENSE.md
-
-|__ README.md`
-
 ##The Synopsis##
 
 Saint George is fighting a dragon invasion, collecting treasure and avoiding death skulls as he attempts to reach the lake.
