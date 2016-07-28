@@ -1,13 +1,30 @@
 #Udacity FEND Arcade Game Project#
 
-This is a javascript arcade game project created and maintained by Garrick McCaskill.
+This is a javascript arcade game project created and maintained by Garrick McCaskill, based on code provided by Udacity.
 
 ##Quick Start##
 
 To play:
 
 **1.** Clone the repo `https://github.com/kiwi-lifter/arcade.git`.
+
 **2.** Open the index.html in a webrowser.
+
+###What's Included###
+
+Within the download you will find the following directories and files:
+
+`arcade/
+|-- css/
+|   |__ style.css
+|-- images/
+|-- js/
+|   |-- app.js
+|	|-- engine.js
+|	|__ resources.js
+|-- index.html
+|-- LICENSE.md
+|__ README.md`
 
 ##The Synopsis##
 
