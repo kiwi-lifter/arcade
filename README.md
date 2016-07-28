@@ -16,14 +16,23 @@ Within the download you will find the following directories and files:
 
 `arcade/
 |-- css/
+
 |   |__ style.css
+
 |-- images/
+
 |-- js/
+
 |   |-- app.js
+
 |	|-- engine.js
+
 |	|__ resources.js
+
 |-- index.html
+
 |-- LICENSE.md
+
 |__ README.md`
 
 ##The Synopsis##
