@@ -167,7 +167,7 @@ var GAMEMODULE = (function() {
 			// remove object from game area
 			this.x = -75;
 			// increment score
-			// don't want score to go below zero
+			// don't want score to  be a negative value
 			if((player.score + this.value)<0){
 				player.score = 0;
 			}
