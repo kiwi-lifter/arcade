@@ -46,7 +46,6 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-
         update(dt);
         render();
 
@@ -54,7 +53,6 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
          * for the next time this function is called.
          */
         lastTime = now;
-
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
@@ -62,7 +60,7 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
 
         return lastTime;
     }
-
+	
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
      * game loop.
@@ -72,7 +70,6 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
         lastTime = Date.now();
         main();
     }
-
     /* This function is called by main (our game loop) and itself calls all
      * of the functions which may need to update entity's data. Based on how
      * you implement your collision detection (when two entities occupy the

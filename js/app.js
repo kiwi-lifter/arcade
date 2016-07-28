@@ -11,10 +11,6 @@ var GAMEMODULE = (function() {
     var rightBorder = colsNum * colWidth;
     var bottomBorder = rowsNum * rowHeight;
 
-    /* Sprites are not the same size as the tiles so some
-     * tweeking of x y coordinate var values is needed
-     */
-
     var enemyPopulation = 5;
     var enemySprites = ['images/red-d.gif', 'images/blue-d.gif', 'images/black-d.gif'];
     var enemyHeight = 74;
@@ -28,7 +24,6 @@ var GAMEMODULE = (function() {
     var playerYcoord = (rowsNum * rowHeight) - playerHeight / 2 + 10;
     var lives = 3;
     var score = 0;
-
 
     var numberOfCoins = 1;
     var coinsSprite = 'images/coins.png';
@@ -48,14 +43,8 @@ var GAMEMODULE = (function() {
     var skullWidth = 71;
     var skullWorth = -15;
 
-    // x coordinates for pavement columns
-    //var pavementColumns = [0, 101, 202, 303, 404];
-    // y coordinates for pavement rows
-    //var pavementRows = [ 140, 220, 305];
-
-    //x y coordinates for pavement tiles
+    //array of x y coordinates for pavement tiles
     var fieldGrid = [
-        //{"x" : 15,"y" : 55, "active" : false}, // water row
         {
             "x": 15,
             "y": 140,
@@ -119,127 +108,12 @@ var GAMEMODULE = (function() {
         },
     ];
 
-    /* Game class with variables and methods for game object
-     */
-    var Game = function() {
-
-        this.gameOver = false;
-        this.pause = false;
-
-        this.colsNum = 5;
-        this.rowsNum = 6;
-        this.colWidth = 101;
-        this.rowHeight = 83;
-        this.tileSize = 83;
-        this.rightBorder = colsNum * colWidth;
-        this.bottomBorder = rowsNum * rowHeight;
-
-        /* Sprites are not the same size as the tiles so some
-         * tweeking of x y coordinate var values is needed
-         */
-
-        this.enemyPopulation = 5;
-        this.enemySprites = ['images/red-d.gif', 'images/blue-d.gif', 'images/black-d.gif'];
-        this.enemyHeight = 74;
-        this.enemyWidth = 98;
-        this.speeds = [150, 250, 300];
-
-        this.playerSprite = 'images/knight.gif';
-        this.playerHeight = 89;
-        this.playerWidth = 71;
-        this.playerXcoord = (colsNum * colWidth) / 2 - playerWidth / 2;
-        this.playerYcoord = (rowsNum * rowHeight) - playerHeight / 2 + 10;
-        this.lives = 3;
-        this.score = 0;
-
-        this.numberOfCoins = 1;
-        this.coinsSprite = 'images/coins.png';
-        this.coinsHeight = 71;
-        this.coinsWidth = 71;
-
-        this.numberOfEquip = 2;
-        this.equipSprites = ['images/sword.png', 'images/book.png', 'images/potion.png'];
-        this.equipHeight = 71;
-        this.equipWidth = 71;
-
-        this.numberOfSkulls = 3;
-        this.skullSprite = 'images/skull.png';
-        this.skullHeight = 71;
-        this.skullWidth = 71;
-
-        //x y coordinates for pavement tiles
-        this.fieldGrid = [
-            //{"x" : "15","y" : "55", "active" : "false"}, // water row
-            {
-                "x": 15,
-                "y": 140,
-                "active": false
-            }, {
-                "x": 15,
-                "y": 220,
-                "active": false
-            }, {
-                "x": 15,
-                "y": 305,
-                "active": false
-            }, {
-                "x": 116,
-                "y": 140,
-                "active": false
-            }, {
-                "x": 116,
-                "y": 220,
-                "active": false
-            }, {
-                "x": 116,
-                "y": 305,
-                "active": false
-            }, {
-                "x": 217,
-                "y": 140,
-                "active": false
-            }, {
-                "x": 217,
-                "y": 220,
-                "active": false
-            }, {
-                "x": 217,
-                "y": 305,
-                "active": false
-            }, {
-                "x": 318,
-                "y": 140,
-                "active": false
-            }, {
-                "x": 318,
-                "y": 220,
-                "active": false
-            }, {
-                "x": 318,
-                "y": 305,
-                "active": false
-            }, {
-                "x": 419,
-                "y": 140,
-                "active": false
-            }, {
-                "x": 419,
-                "y": 220,
-                "active": false
-            }, {
-                "x": 419,
-                "y": 305,
-                "active": false
-            },
-        ];
-    };
-
-
-    /* Super class for game agents - player, enemies, coins etc
-     * @param {String}	sprite	path to sprite image
-     * @param {number}	height	height of sprite
-     * @param {number}	width	width of sprite 
-     */
+    /**
+	* @constructor Superclass creates new game entity.
+	* @param {String}	sprite	Path to sprite image.
+    * @param {number}	height	px height of sprite.
+    * @param {number}	width	px width of sprite. 
+    **/
     var GameEntity = function(sprite, height, width) {
         this.sprite = sprite;
         this.height = height;
@@ -249,7 +123,11 @@ var GAMEMODULE = (function() {
     GameEntity.prototype.render = function() {
         ENGINEMODULE.ctx.drawImage(Resources.get(this.sprite), this.x, this.coordinates.y);
     };
-
+	/**
+	* @description Method generates random x y coordinates, checks them against
+	* game grid array to make sure they are not already active, before assigning them
+	* to the object.
+    **/
     GameEntity.prototype.placeEntity = function() {
         // get random x y coordinates for 
         var active = true;
@@ -272,7 +150,9 @@ var GAMEMODULE = (function() {
         } // end while	
     };
 
-    // Enemies our player must avoid
+    /**
+	* @constructor Creates new Enemy
+    **/
     var Enemy = function() {
 
         this.height = enemyHeight;
@@ -284,13 +164,11 @@ var GAMEMODULE = (function() {
 
     Enemy.prototype = Object.create(GameEntity.prototype);
     Enemy.prototype.constructor = Enemy;
-
-    // Update the enemy's position, required method for game
-    // Parameter: dt, a time delta between ticks
+	/**
+	* @description Update the enemy's position, required method for game.
+    * @param {number}	dt	 A time delta between ticks.
+    **/
     Enemy.prototype.update = function(dt) {
-        // You should multiply any movement by the dt parameter
-        // which will ensure the game runs at the same speed for
-        // all computers.
         this.x += this.speed * dt;
         // Restart the enemy once it reaches end of row.
         if (this.x > rightBorder) {
@@ -304,13 +182,13 @@ var GAMEMODULE = (function() {
         };
     };
 
-    // reset the enemy position once it reaches end of row
+    // set or reset the enemy position once it reaches end of row
     Enemy.prototype.startEnemy = function() {
         this.sprite = randomSpriteImage(enemySprites);
         this.x = -colWidth;
         this.coordinates = randomCoordinates();
         this.y = this.coordinates.y;
-
+		// set speed depending on enemy sprite type
         switch (this.sprite) {
 
             case 'images/red-d.gif':
@@ -330,9 +208,9 @@ var GAMEMODULE = (function() {
         };
     };
 
-    // Now write your own player class
-    // This class requires an update(), render() and
-    // a handleInput() method.
+    /**
+	* @constructor Creates new Player.
+    **/
     var Player = function() {
         GameEntity.call(this, playerSprite, playerHeight, playerWidth);
         this.startPlayer();
@@ -344,7 +222,6 @@ var GAMEMODULE = (function() {
 
     Player.prototype = Object.create(GameEntity.prototype);
     Player.prototype.constructor = Player;
-
     Player.prototype.update = function() {
         // reached the water or all out of lives?
         if (this.lives === 0 || this.y < 55) {
@@ -353,13 +230,12 @@ var GAMEMODULE = (function() {
     };
 
     Player.prototype.render = function() {
+		// using the ctx invoked in ENGINEMODULE
         ENGINEMODULE.ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-
         // score
         ENGINEMODULE.ctx.font = "20px Arial";
         ENGINEMODULE.ctx.fillStyle = "#fff";
         ENGINEMODULE.ctx.fillText("Score: " + this.score, 8, 570);
-
         // lives
         ENGINEMODULE.ctx.font = "20px Arial";
         ENGINEMODULE.ctx.fillStyle = "#fff";
@@ -415,7 +291,9 @@ var GAMEMODULE = (function() {
         };
     };
 
-    // Coins class
+    /**
+	* @constructor Creates new Coins.
+    **/
     var Coins = function() {
 
         GameEntity.call(this, coinsSprite, coinsHeight, coinsWidth);
@@ -442,10 +320,13 @@ var GAMEMODULE = (function() {
             player.score += coinsWorth;
         };
     }
-
-    // Equip class
+	
+	
+    /**
+	* @constructor Creates new Equipment.
+    **/
     var Equip = function() {
-        // get random from an array of images
+        // get random image from an array
         var randomEnemySprite = randomSpriteImage(equipSprites);
         GameEntity.call(this, randomEnemySprite, equipHeight, equipWidth);
         this.placeEntity();
@@ -471,7 +352,9 @@ var GAMEMODULE = (function() {
         };
     }
 
-    // Skull class
+	/**
+	* @constructor Creates new Skull.
+    **/
     var Skull = function() {
         GameEntity.call(this, skullSprite, skullHeight, skullWidth);
         this.placeEntity();
@@ -499,7 +382,9 @@ var GAMEMODULE = (function() {
         };
     }
 
-    // Random selection of x y cooordinates object from an array
+    /**
+	* @description Generates random x and y coordinate numbers from the field grid array
+    **/
     var randomCoordinates = function() {
         shuffleArray(fieldGrid);
         var randomNum = Math.floor(Math.random() * fieldGrid.length);
@@ -507,7 +392,11 @@ var GAMEMODULE = (function() {
         return theResult;
     };
 
-    // Random selection of a number from any number array passed in as the parameter.
+    /**
+	* @description Generates random number from an array
+	* @param {array}
+	* @returns {number} A number from the array.
+    **/
     var randomNumFromArray = function(numberArray) {
         shuffleArray(numberArray);
         var randomNum = Math.floor(Math.random() * numberArray.length);
@@ -515,14 +404,22 @@ var GAMEMODULE = (function() {
         return theResult;
     };
 
-    // Random selection of sprite image/sprite
+    /**
+	* @description Generates random sprite image from an array
+	* @param {array}
+	* @returns {image} A sprite image from the array.
+    **/
     var randomSpriteImage = function(spriteArray) {
         var randomNum = Math.floor(Math.random() * spriteArray.length);
         var theResult = spriteArray[randomNum];
         return theResult;
     };
 
-    //Some extra randomness
+    /**
+	* @description Randomly shuffles an array of numbers.
+	* @param {array}
+	* @returns {number} The shuffled array.
+    **/
     var shuffleArray = function(array) {
         var i = 0,
             j = 0,
@@ -536,7 +433,10 @@ var GAMEMODULE = (function() {
             return temp;
         }
     };
-
+	
+	/**
+	* @description Resets game state on game over.
+    **/
     var resetGame = function() {
         player.lives = GAMEMODULE.lives;
         player.score = GAMEMODULE.score;
@@ -557,11 +457,10 @@ var GAMEMODULE = (function() {
         });
         allCoins.forEach(function(coins) {
             coins.placeEntity();
-        });
-        //lastTime = Date.now();	
+        });	
         ENGINEMODULE.main();
     };
-    // Now instantiate your objects.
+    
     // Place all enemy objects in an array called allEnemies
 
     var allEnemies = [];
@@ -608,9 +507,9 @@ var GAMEMODULE = (function() {
             player.handleInput(allowedKeys[e.keyCode]);
         } // end if
     });
-    /* return GAMEMODULE result as an object to global scope for use by Engine module
-     * add any properties to this object that need to be revealed to the global scope	
-     */
+    /** return GAMEMODULE result as an object to global scope for use by Engine module
+     *  add any properties to this object that need to be revealed to the global scope	
+     **/
     return {
         allEnemies: allEnemies,
         allCoins: allCoins,
