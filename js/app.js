@@ -149,7 +149,33 @@ var GAMEMODULE = (function() {
             } //end if
         } // end while	
     };
-
+	/**
+	* @description Method checks if player has collided with entities, adjust player score if true.
+	* @param {array} entityArray The entity objects to be checked against player.
+    **/
+	GameEntity.prototype.collisionDetection = function(entityArray) {
+		// collision detection
+		if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
+			//find index position of object in array
+			var index = -1;
+			for (var i = 0; i < entityArray.length; i++) {
+				if (entityArray[i].x === this.x && entityArray[i].y === this.y) {
+					index = i;
+					break;
+				}
+			};
+			// remove object from game area
+			this.x = -75;
+			// increment score
+			// don't want score to go below zero
+			if((player.score + this.value)<0){
+				player.score = 0;
+			}
+			else{
+				player.score += this.value;
+			}
+		};
+	}
     /**
 	* @constructor Creates new Enemy
     **/
@@ -297,28 +323,14 @@ var GAMEMODULE = (function() {
     var Coins = function() {
 
         GameEntity.call(this, coinsSprite, coinsHeight, coinsWidth);
+		this.value = coinsWorth;
         this.placeEntity();
     }
 
     Coins.prototype = Object.create(GameEntity.prototype);
     Coins.prototype.constructor = Coins;
-
     Coins.prototype.update = function() {
-        // collision detection
-        if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
-            //find index position of Coins object in array
-            var index = -1;
-            for (var i = 0; i < allCoins.length; i++) {
-                if (allCoins[i].x === this.x && allCoins[i].y === this.y) {
-                    index = i;
-                    break;
-                }
-            };
-            // remove Coins object from game area
-            this.x = -75;
-            // increment score
-            player.score += coinsWorth;
-        };
+        this.collisionDetection(allCoins);
     }
 	
 	
@@ -329,27 +341,14 @@ var GAMEMODULE = (function() {
         // get random image from an array
         var randomEnemySprite = randomSpriteImage(equipSprites);
         GameEntity.call(this, randomEnemySprite, equipHeight, equipWidth);
+		this.value = equipWorth;
         this.placeEntity();
     }
 
     Equip.prototype = Object.create(GameEntity.prototype);
     Equip.prototype.constructor = Equip;
     Equip.prototype.update = function() {
-        // collision detection
-        if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
-            //find index position of Coins object in array
-            var index = -1;
-            for (var i = 0; i < allEquip.length; i++) {
-                if (allEquip[i].x === this.x && allEquip[i].y === this.y) {
-                    index = i;
-                    break;
-                }
-            };
-            // remove Equip object off the game board
-            this.x = -75;
-            // increment score
-            player.score += equipWorth;
-        };
+        this.collisionDetection(allEquip);
     }
 
 	/**
@@ -357,29 +356,14 @@ var GAMEMODULE = (function() {
     **/
     var Skull = function() {
         GameEntity.call(this, skullSprite, skullHeight, skullWidth);
+		this.value = skullWorth;
         this.placeEntity();
     }
 
     Skull.prototype = Object.create(GameEntity.prototype);
     Skull.prototype.constructor = Skull;
     Skull.prototype.update = function() {
-        // collision detection
-        if (player.x < this.x + this.width && player.x + player.width > this.x && player.y < this.y + this.height && player.height + player.y > this.y) {
-            //find index position of Skull object in array
-            var index = -1;
-            for (var i = 0; i < allSkulls.length; i++) {
-                if (allSkulls[i].x === this.x && allSkulls[i].y === this.y) {
-                    index = i;
-                    break;
-                }
-            };
-            // remove Skull object from game canvas
-            this.x = -75;
-            // increment score
-            if (player.score >= 10) {
-                player.score += skullWorth;
-            }
-        };
+        this.collisionDetection(allCoins);
     }
 
     /**

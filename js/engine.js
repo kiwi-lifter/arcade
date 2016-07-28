@@ -153,6 +153,7 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+		// If the game isn't over.
         if (GAMEMODULE.player.gameOver === false) {
             GAMEMODULE.allSkulls.forEach(function(skull) {
                 skull.render();
@@ -171,11 +172,12 @@ var ENGINEMODULE = (function(global, GAMEMODULE) {
                 enemy.render();
             });
             GAMEMODULE.player.render();
+		// Else render gameover graphics.
         } else {
             GAMEMODULE.player.render();
             // score
             ctx.font = "40px Arial";
-            ctx.fillStyle = "#fff";
+            ctx.fillStyle = "#000";
             ctx.fillText("Total Score: " + GAMEMODULE.player.score, 130, 200);
             ctx.font = "30px Arial";
             ctx.fillText("Press space bar to start again", 55, 300);
